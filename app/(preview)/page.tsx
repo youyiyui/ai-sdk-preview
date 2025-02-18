@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Markdown } from "@/components/markdown";
+import { models } from "../config/models";
 
 const getTextFromDataUrl = (dataUrl: string) => {
   const base64 = dataUrl.split(",")[1];
@@ -40,16 +41,20 @@ function TextFilePreview({ file }: { file: File }) {
 }
 
 export default function Home() {
-  const { messages, input, handleSubmit, handleInputChange, isLoading } =
-    useChat({
-      onError: () =>
-        toast.error("You've been rate limited, please try again later!"),
-    });
-
+  const [selectedModel, setSelectedModel] = useState(models[1]); // 默认选择 gpt-4o
   const [files, setFiles] = useState<FileList | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null); // Reference for the hidden file input
   const [isDragging, setIsDragging] = useState(false);
+
+  const { messages, input, handleSubmit, handleInputChange, isLoading } =
+    useChat({
+      body: {
+        model: selectedModel.id,
+      },
+      onError: () =>
+        toast.error("You've been rate limited, please try again later!"),
+    });
 
   const handlePaste = (event: React.ClipboardEvent) => {
     const items = event.clipboardData?.items;
@@ -172,7 +177,7 @@ export default function Home() {
             {messages.map((message, index) => (
               <motion.div
                 key={message.id}
-                className={`flex flex-row gap-2 px-4 w-full md:w-[500px] md:px-0 ${
+                className={`flex flex-row gap-2 px-4 w-full md:w-[800px] md:px-0 ${
                   index === 0 ? "pt-20" : ""
                 }`}
                 initial={{ y: 5, opacity: 0 }}
@@ -208,7 +213,7 @@ export default function Home() {
 
             {isLoading &&
               messages[messages.length - 1].role !== "assistant" && (
-                <div className="flex flex-row gap-2 px-4 w-full md:w-[500px] md:px-0">
+                <div className="flex flex-row gap-2 px-4 w-full md:w-[800px] md:px-0">
                   <div className="size-[24px] flex flex-col justify-center items-center flex-shrink-0 text-zinc-400">
                     <BotIcon />
                   </div>
@@ -221,7 +226,7 @@ export default function Home() {
             <div ref={messagesEndRef} />
           </div>
         ) : (
-          <motion.div className="h-[350px] px-4 w-full md:w-[500px] md:px-0 pt-20">
+          <motion.div className="h-[350px] px-4 w-full md:w-[800px] md:px-0 pt-20">
             <div className="border rounded-lg p-6 flex flex-col gap-4 text-zinc-500 text-sm dark:text-zinc-400 dark:border-zinc-700">
               <p className="flex flex-row justify-center gap-4 items-center text-zinc-900 dark:text-zinc-50">
                 <VercelIcon />
@@ -258,9 +263,29 @@ export default function Home() {
             setFiles(null);
           }}
         >
+          {/* Model Selector */}
+          <div className="w-full md:max-w-[800px] mb-2">
+            <select
+              value={selectedModel.id}
+              onChange={(e) => {
+                const model = models.find((m) => m.id === e.target.value);
+                if (model) {
+                  setSelectedModel(model);
+                }
+              }}
+              className="w-full px-3 py-2 bg-zinc-100 dark:bg-zinc-700 rounded-lg text-zinc-800 dark:text-zinc-300"
+            >
+              {models.map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.name} (${model.inputPrice}/${model.outputPrice})
+                </option>
+              ))}
+            </select>
+          </div>
+
           <AnimatePresence>
             {files && files.length > 0 && (
-              <div className="flex flex-row gap-2 absolute bottom-12 px-4 w-full md:w-[500px] md:px-0">
+              <div className="flex flex-row gap-2 absolute bottom-12 px-4 w-full md:w-[800px] md:px-0">
                 {Array.from(files).map((file) =>
                   file.type.startsWith("image") ? (
                     <div key={file.name}>
@@ -309,7 +334,7 @@ export default function Home() {
             onChange={handleFileChange}
           />
 
-          <div className="flex items-center w-full md:max-w-[500px] max-w-[calc(100dvw-32px)] bg-zinc-100 dark:bg-zinc-700 rounded-full px-4 py-2">
+          <div className="flex items-center w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] bg-zinc-100 dark:bg-zinc-700 rounded-full px-4 py-2">
             {/* Upload Button */}
             <button
               type="button"
