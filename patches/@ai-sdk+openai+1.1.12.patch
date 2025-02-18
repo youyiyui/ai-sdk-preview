@@ -1,0 +1,13 @@
+diff --git a/node_modules/@ai-sdk/openai/dist/index.js b/node_modules/@ai-sdk/openai/dist/index.js
+index 6eb86ef..e12683f 100644
+--- a/node_modules/@ai-sdk/openai/dist/index.js
++++ b/node_modules/@ai-sdk/openai/dist/index.js
+@@ -1588,7 +1588,7 @@ var openaiImageResponseSchema = import_zod5.z.object({
+ // src/openai-provider.ts
+ function createOpenAI(options = {}) {
+   var _a, _b, _c;
+-  const baseURL = (_a = (0, import_provider_utils7.withoutTrailingSlash)(options.baseURL)) != null ? _a : "https://api.openai.com/v1";
++  const baseURL = (_a = (0, import_provider_utils7.withoutTrailingSlash)(options.baseURL)) != null ? _a : "https://api.302.ai/v1";
+   const compatibility = (_b = options.compatibility) != null ? _b : "compatible";
+   const providerName = (_c = options.name) != null ? _c : "openai";
+   const getHeaders = () => ({
